@@ -60,7 +60,19 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect('mongodb://localhost:27017/pixelart', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://127.0.0.1:27017/pixelart', { 
+  useNewUrlParser: true, 
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000 // 5 seconds
+})
+.then(() => console.log('Database connected successfully'))
+.catch(err => console.error('Database connection error:', err));
+console.log('this log goes after the mongoose connection')
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  console.log('we re connected!')
+});
 
 const sharp = require('sharp');
 
@@ -233,57 +245,85 @@ const User = mongoose.model('User', userSchema);
 const NFT = mongoose.model('NFT', nftSchema);
 
 app.get('/paintings', async (req, res) => {
-  let painting = await Painting.findOne();
-  if (!painting) {
-    painting = new Painting({
-      pixels: Array(50).fill().map(() => Array(50).fill(0))
-    });
-    await painting.save();
+  try {
+    let painting = await Painting.findOne();
+    if (!painting) {
+      painting = new Painting({
+        pixels: Array(50).fill().map(() => Array(50).fill(0))
+      });
+      await painting.save();
+    }
+    res.send(painting);
+  } catch (error) {
+    console.error('Error fetching paintings:', error);
+    res.status(500).send('Error fetching paintings');
   }
-  res.send(painting);
 });
 
 app.post('/paintings', async (req, res) => {
-  let painting = await Painting.findOne();
-  if (painting) {
-    painting.pixels = req.body.pixels;
-    await painting.save();
-  } else {
-    painting = new Painting({
-      pixels: req.body.pixels
+  try {
+    let painting = await Painting.findOne();
+    if (painting) {
+      painting.pixels = req.body.pixels;
+      await painting.save();
+    } else {
+      painting = new Painting({
+        pixels: req.body.pixels
+      });
+      await painting.save();
+    }
+
+    // Broadcast the updated pixels
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify({ type: 'pixels', data: req.body.pixels }));
+      }
     });
-    await painting.save();
+
+    res.send(painting);
+  } catch (error) {
+    console.error('Error updating paintings:', error);
+    res.status(500).send('Error updating paintings');
   }
-  res.send(painting);
 });
 
 app.get('/users', async (req, res) => {
+  try {
     const users = await User.find();
     res.send(users);
-  });
-  
-app.post('/users', async (req, res) => {
-  let user = await User.findOne({ username: req.body.username });
-  if (user) {
-      user.pixelCount += req.body.pixelCount;
-      user.transactionCount += 1;
-      user.paintedPixels.push(...req.body.paintedPixels);
-      await user.save();
-  } else {
-    user = new User({
-      ...req.body,
-      transactionCount: 1
-    });
-    await user.save();
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).send('Error fetching users');
   }
-  // Broadcast the updated users
-  const users = await User.find();
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify({ type: 'users', data: users }));
+});
+
+app.post('/users', async (req, res) => {
+  try {
+    let user = await User.findOne({ username: req.body.username });
+    if (user) {
+        user.pixelCount += req.body.pixelCount;
+        user.transactionCount += 1;
+        user.paintedPixels.push(...req.body.paintedPixels);
+        await user.save();
+    } else {
+      user = new User({
+        ...req.body,
+        transactionCount: 1
+      });
+      await user.save();
     }
-  });
-  res.send(user);
+    // Broadcast the updated users
+    const users = await User.find();
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify({ type: 'users', data: users }));
+      }
+    });
+    res.send(user);
+  } catch (error) {
+    console.error('Error updating users:', error);
+    res.status(500).send('Error updating users');
+  }
 });
 
 app.get('/users/pixel/:i/:j', async (req, res) => {
@@ -311,8 +351,28 @@ app.post('/users/addPixel', async (req, res) => {
 });
 
 app.get('/nfts', async (req, res) => {
-  const nfts = await NFT.find();
-  res.send(nfts);
+  try {
+    console.log('fetching nfts')
+    const nfts = await NFT.find();
+    res.send(nfts);
+  } catch (error) {
+    console.error('Error fetching NFTs:', error);
+    res.status(500).send('Error fetching NFTs');
+  }
 });
+
+// try {
+//   const testUser = new User({
+//     username: 'test',
+//     pixelCount: 0,
+//     transactionCount: 0,
+//     paintedPixels: []
+//   });
+
+//   await testUser.save();
+//   console.log('User saved successfully');
+// } catch (err) {
+//   console.error('Error saving user:', err);
+// }
 
 app.listen(5000, () => console.log('Server started on port 5000'));

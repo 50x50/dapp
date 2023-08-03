@@ -179,29 +179,46 @@ const Drawing = ({ username, connectWallet }) => {
   }, []);
 
   useEffect(() => {
-    const ws = new WebSocket(`${process.env.REACT_APP_WEBSOCKET_API_URL}`);
-    ws.onopen = () => {
-      console.log("connected to ws server");
-    };
-    ws.onmessage = (event) => {
-      if (typeof event.data === "string") {
-        const message = JSON.parse(event.data);
-        if (message.type === 'pixels' && Array.isArray(message.data) && message.data.every(Array.isArray)) {
-          setPixels(message.data);
-        }
-      } else if (event.data instanceof Blob) {
-        const reader = new FileReader();
-        reader.onload = function () {
-          const message = JSON.parse(this.result);
+    let ws = null;
+    const connect = () => {
+      ws = new WebSocket(`${process.env.REACT_APP_WEBSOCKET_API_URL}`);
+      ws.onopen = () => {
+        console.log("connected to ws server");
+      };
+      ws.onmessage = (event) => {
+        if (typeof event.data === "string") {
+          const message = JSON.parse(event.data);
           if (message.type === 'pixels' && Array.isArray(message.data) && message.data.every(Array.isArray)) {
             setPixels(message.data);
           }
-        };
-        reader.readAsText(event.data);
+        } else if (event.data instanceof Blob) {
+          const reader = new FileReader();
+          reader.onload = function () {
+            const message = JSON.parse(this.result);
+            if (message.type === 'pixels' && Array.isArray(message.data) && message.data.every(Array.isArray)) {
+              setPixels(message.data);
+            }
+          };
+          reader.readAsText(event.data);
+        }
+      };
+      ws.onclose = (e) => {
+        console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
+        setTimeout(function() {
+          connect();
+        }, 1000);
+      };
+      ws.onerror = (err) => {
+        console.error('Socket encountered error: ', err.message, 'Closing socket');
+        ws.close();
+      };
+    };
+    connect();
+    return () => {
+      if (ws) {
+        ws.close();
       }
     };
-    setWs(ws);
-    return () => ws.close();
   }, []);
 
   const theme = createTheme({
@@ -303,7 +320,7 @@ const Drawing = ({ username, connectWallet }) => {
         pixelCount,
         paintedPixels,
       });
-      ws.send(JSON.stringify({ type: 'pixels', data: mergedPixels }));
+      // ws.send(JSON.stringify({ type: 'pixels', data: mergedPixels }));
       setPixelCount(0);
       setPaintedPixels([]);
       setClickedPixels({});
