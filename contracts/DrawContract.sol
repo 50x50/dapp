@@ -27,7 +27,7 @@ contract DrawContract is ERC721URIStorage {
     function mintNFT(address recipient, string memory newTokenURI) external returns (uint256) {
         require(msg.sender == contractDeployer, "Only contract deployer can mint");
         require(recipient != address(0), "Invalid recipient");
-        require(bytes(tokenURI).length > 0, "Invalid URI");
+        require(bytes(newTokenURI).length > 0, "Invalid URI");
         uint256 newTokenId = tokenCounter;
         _mint(recipient, newTokenId);
         _setTokenURI(newTokenId, newTokenURI);
