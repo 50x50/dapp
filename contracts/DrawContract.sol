@@ -7,12 +7,14 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 contract DrawContract is ERC721URIStorage {
     mapping(address => uint256) public draws;
     uint256 public tokenCounter;
+    address public contractDeployer;
 
     constructor() ERC721("DrawToken", "DTKN") {
         tokenCounter = 0;
+        contractDeployer = msg.sender;
     }
 
-    function draw() public payable{
+    function draw() public {
         draws[msg.sender] += 1;
     }
 
@@ -21,6 +23,9 @@ contract DrawContract is ERC721URIStorage {
     }
 
     function mintNFT(address recipient, string memory tokenURI) public returns (uint256) {
+        require(msg.sender == contractDeployer, "Only contract deployer can mint");
+        require(recipient != address(0), "Invalid recipient");
+        require(bytes(tokenURI).length > 0, "Invalid URI");
         uint256 newTokenId = tokenCounter;
         _mint(recipient, newTokenId);
         _setTokenURI(newTokenId, tokenURI);
