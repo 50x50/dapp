@@ -8,6 +8,7 @@ contract DrawContract is ERC721URIStorage {
     mapping(address => uint256) public draws;
     uint256 public tokenCounter;
     address public contractDeployer;
+    event Drawn(address indexed sender, uint256 amount);
 
     constructor() ERC721("DrawToken", "DTKN") {
         tokenCounter = 0;
@@ -16,13 +17,14 @@ contract DrawContract is ERC721URIStorage {
 
     function draw() external {
         draws[msg.sender] += 1;
+        emit Drawn(msg.sender, draws[msg.sender]);
     }
 
     function getDrawCount(address user) external view returns (uint256) {
         return draws[user];
     }
 
-    function mintNFT(address recipient, string memory tokenURI) external returns (uint256) {
+    function mintNFT(address recipient, string memory newTokenURI) external returns (uint256) {
         require(msg.sender == contractDeployer, "Only contract deployer can mint");
         require(recipient != address(0), "Invalid recipient");
         require(bytes(tokenURI).length > 0, "Invalid URI");
@@ -30,6 +32,5 @@ contract DrawContract is ERC721URIStorage {
         _mint(recipient, newTokenId);
         _setTokenURI(newTokenId, tokenURI);
         tokenCounter = tokenCounter + 1;
-        return newTokenId;
     }
 }
