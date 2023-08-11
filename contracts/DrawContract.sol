@@ -14,15 +14,15 @@ contract DrawContract is ERC721URIStorage {
         contractDeployer = msg.sender;
     }
 
-    function draw() public {
+    function draw() external {
         draws[msg.sender] += 1;
     }
 
-    function getDrawCount(address user) public view returns (uint256) {
+    function getDrawCount(address user) external view returns (uint256) {
         return draws[user];
     }
 
-    function mintNFT(address recipient, string memory tokenURI) public returns (uint256) {
+    function mintNFT(address recipient, string memory tokenURI) external returns (uint256) {
         require(msg.sender == contractDeployer, "Only contract deployer can mint");
         require(recipient != address(0), "Invalid recipient");
         require(bytes(tokenURI).length > 0, "Invalid URI");
