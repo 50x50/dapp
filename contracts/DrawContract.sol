@@ -30,7 +30,7 @@ contract DrawContract is ERC721URIStorage {
         require(bytes(tokenURI).length > 0, "Invalid URI");
         uint256 newTokenId = tokenCounter;
         _mint(recipient, newTokenId);
-        _setTokenURI(newTokenId, tokenURI);
+        _setTokenURI(newTokenId, newTokenURI);
         tokenCounter = tokenCounter + 1;
     }
 }
