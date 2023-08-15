@@ -9,39 +9,39 @@ In the project directory, you can run:
 ### `npm start`
 
 Starts the application in development mode.\
-Откройте [http://localhost:3000](http://localhost:3000) для просмотра в браузере.
+Open [http://localhost:3000](http://localhost:3000) to view in a browser.
 
-Страница будет перезагружаться, если вы вносите изменения.\
-Вы также можете увидеть любые ошибки линтера в консоли.
+The page will reload if you make changes.\
+You can also see any linter errors in the console.
 
 ### `node server/server.js`
 
-Запускает бекэнд сервер (HTTP API и WebSocket API).
+Starts the backend server (HTTP API and WebSocket API).
 
 ### `npm run build`
 
-Собирает приложение для продакшена в папку `build`.\
-Объединяет React в режиме продакшена и оптимизирует сборку для наилучшей производительности.
+Builds a production application into a folder `build`.\
+Combines React in production mode and optimizes the build for best performance.
 
-Сборка минифицирована, а имена файлов включают хеши.\
-Ваше приложение готово к развертыванию!
+The build is minified and file names include hashes.\
+Your application is ready for deployment!
 
-Смотрите раздел о [развертывании](https://facebook.github.io/create-react-app/docs/deployment) для получения дополнительной информации.
+See the section on [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
 ### `npx hardhat run scripts/deploy.js --network sepolia`
 
-Запускает скрипт `deploy.js` с помощью инструмента Hardhat в сети Sepolia.\
-Этот скрипт используется для развертывания вашего контракта в сети Sepolia.
+Runs the `deploy.js` script using the Hardhat tool on the Sepolia network.
+This script is used to deploy your contract to the Sepolia network.
 
-Убедитесь, что у вас установлен Hardhat и вы настроили конфигурацию сети Sepolia в файле `hardhat.config.js`.
+Make sure you have Hardhat installed and have configured the Sepolia network configuration in the `hardhat.config.js` file.
 
-После успешного выполнения, вы должны увидеть адрес развернутого контракта в консоли.
+Upon successful execution, you should see the address of the deployed contract in the console.
 
-### Использование параметра --network
+### Using the --network parameter
 
-Параметр `--network` используется для указания сети, в которой вы хотите развернуть свой контракт. В приведенном выше примере мы используем сеть Sepolia.
+The `--network` parameter is used to specify the network on which you want to deploy your contract. In the above example, we use the Sepolia network.
 
-Вы можете добавить новую сеть в файл `hardhat.config.js`. Вот пример того, как это можно сделать:
+You can add a new network to the `hardhat.config.js` file. Here is an example of how to do it:
 ```
 module.exports = {
     solidity: "0.8.18",
@@ -59,6 +59,6 @@ module.exports = {
 };
 ```
 
-### Конфигурация dotenv
+### Configuration dotenv
 
-Мы используем пакет `dotenv` для загрузки переменных из файла `.env`. Этот файл находится в корневой директории проекта и содержит все необходимые переменные окружения в формате `NAME=VALUE`. Для настройки можно ознакомиться с комментариями в самом файле.
+We use the `dotenv` package to load variables from the `.env` file. This file is located in the root directory of the project and contains all necessary environment variables in the format `NAME=VALUE`. For customization you can read the comments in the file itself.
