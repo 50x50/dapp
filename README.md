@@ -4,11 +4,11 @@ Collborative drawing dApp with a twist.
 
 ## Доступные скрипты
 
-В директории проекта вы можете запустить:
+In the project directory, you can run:
 
 ### `npm start`
 
-Запускает приложение в режиме разработки.\
+Starts the application in development mode.\
 Откройте [http://localhost:3000](http://localhost:3000) для просмотра в браузере.
 
 Страница будет перезагружаться, если вы вносите изменения.\
