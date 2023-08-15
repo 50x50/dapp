@@ -2,7 +2,7 @@
 
 Collborative drawing dApp with a twist.
 
-## Доступные скрипты
+## Available scripts
 
 In the project directory, you can run:
 
