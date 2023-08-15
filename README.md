@@ -50,9 +50,9 @@ module.exports = {
             url: "https://eth-sepolia.public.blastapi.io",
             accounts: process.env.ADMIN_WALLET_KEY]
         },
-        // Добавьте вашу новую сеть здесь
+        // Add your new network here
         newNetwork: {
-            url: "URL_ВАШЕЙ_СЕТИ",
+            url: "URL_YOUR_NETWORK",
             accounts: [process.env.ADMIN_WALLET_KEY]
         }
         },
