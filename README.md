@@ -14,7 +14,7 @@ Open [http://localhost:3000](http://localhost:3000) to view in a browser.
 The page will reload if you make changes.\
 You can also see any linter errors in the console.
 
-### `node server/server.js`
+### node server/server.js
 
 Starts the backend server (HTTP API and WebSocket API).
 
